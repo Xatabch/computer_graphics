@@ -107,11 +107,6 @@ def center_inscribed_circle(points_array):
         mby = middle_c_y
         ba = -1/angle_b
         bb = -1/angle_c
-        
-    #bissec_a = -1/angle_a
-    #bissec_b = -1/angle_b
-    #bissec_c = -1/angle_c
-    #print('bissectrises: ',bissec_a,bissec_b,bissec_c)
 
     a = (ba*max-may+mby-bb*mbx)/(ba-bb)
     b = ba*(a - max) + may
