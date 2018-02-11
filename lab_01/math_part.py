@@ -1,4 +1,5 @@
 import math as mt
+import numpy as np
 
 def size_length(point1,point2,point3):
     '''Возвращает длины трех сторон(a,b,c), проходящих через
@@ -65,11 +66,9 @@ def center_inscribed_circle(points_array):
     '''Находит центр вписанной окружности a(x1-x2,y1-y2)
        b(x2-x3,y2-y3),c(x3-x1,y3-y1)'''
 
+    a,b,c = size_length(points_array[0],points_array[1],
+                        points_array[2])
 
-    a,b,c = a,b,c = size_length(points_array[0],points_array[1],
-                                points_array[2])
-
-    print(a,b,c)
 
     xa = points_array[0][0]
     ya = points_array[0][1]
@@ -78,11 +77,47 @@ def center_inscribed_circle(points_array):
     xc = points_array[2][0]
     yc = points_array[2][1]
 
-    center_x = (b*xa + a*xb + c*xc)/(a+b+c)
-    center_y = (b*ya + a*yb + c*yc)/(a+b+c)
+    v_ab = [xa-xb,ya-yb]
+    v_ac = [xa-xc,ya-yc]
 
-    return center_x,center_y
+    v_a = [v_ab[0]/a,v_ab[1]/a]
+    v_b = [v_ac[0]/c,v_ac[1]/c]
 
+    v_ak = [v_a[0]+v_b[0],v_a[1]+v_b[1]]
+
+    v_bc = [xc-xb,yc-yb]
+    v_ba = [xa-xb,ya-yb]
+
+    v_a = [v_bc[0]/b,v_bc[1]/b]
+    v_b = [v_ba[0]/a,v_ba[1]/a]
+
+    v_bk = [v_a[0]+v_b[0],v_a[1]+v_b[1]]
+
+    v_cb = [xb-xc,yb-yc]
+    v_ca = [xa-xc,ya-yc]
+
+    v_a = [v_cb[0]/b,v_cb[1]/b]
+    v_b = [v_ca[0]/a,v_ca[1]/a]
+
+    v_ck = [v_a[0]+v_b[0],v_a[1]+v_b[1]]
+
+    M1 = np.array([[2*v_ak[1]**2+2*v_bk[1]**2+2*v_ck[1]**2,
+                    2*v_ak[0]*v_ak[1]+v_bk[0]*v_bk[1]+2*v_ck[0]*v_ck[1]],
+                   [2*v_ak[1]*v_ak[0]+2*v_bk[1]*v_bk[0]+2*v_ck[1]*v_ck[0],
+                    2*v_ak[0]**2+2*v_bk[0]**2+2*v_ck[0]**2]])
+
+    v1 = np.array([-2*v_ak[0]*v_ak[1]*ya+2*v_ak[1]**2*xa-
+                   2*v_bk[0]*v_bk[1]*yb+2*v_bk[1]**2*xb-
+                   2*v_ck[0]*v_ck[1]*yc+2*v_ck[1]**2*xc,
+                   -2*v_ak[0]**2*ya+2*v_ak[1]*v_ak[0]*xa-
+                   2*v_bk[0]**2*yb+2*v_bk[1]*v_bk[0]*xb-
+                   2*v_ck[0]**2*yc+2*v_ck[1]*v_ck[0]*xc])
+
+    res = np.linalg.solve(M1,v1)
+
+    return res
+
+    
 def square_circumscribed_circle(point1,point2,point3):
     '''Возвращает площадь описанной окружности'''
 
