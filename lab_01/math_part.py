@@ -65,54 +65,23 @@ def center_inscribed_circle(points_array):
     '''Находит центр вписанной окружности a(x1-x2,y1-y2)
        b(x2-x3,y2-y3),c(x3-x1,y3-y1)'''
 
-    x1 = points_array[0][0]
-    y1 = points_array[0][1]
-    x2 = points_array[1][0]
-    y2 = points_array[1][1]
-    x3 = points_array[2][0]
-    y3 = points_array[2][1]
-    print('x1,x2',x1,x2)
 
-    middle_a_x = (x1 + x2)/2
-    middle_a_y = (y1 + y2)/2
-    middle_b_x = (x2 + x3)/2
-    middle_b_y = (y2 + y3)/2
-    middle_c_x = (x3 + x1)/2
-    middle_c_y = (y3 + y1)/2
-    print('middles a,b: (',middle_a_x,',',middle_a_y,'),(',middle_b_x,',',middle_b_y,')')
+    a,b,c = a,b,c = size_length(points_array[0],points_array[1],
+                                points_array[2])
 
-    angle_a = (y2-y1)/(x2-x1)
-    angle_b = (y3-y2)/(x3-x2)
-    angle_c = (y1-y3)/(x1-x3)
-    print('angles: ',angle_a,angle_b,angle_c)
+    print(a,b,c)
 
-    if (abs(angle_a) != 0 and abs(angle_b) != 0):
-        max = middle_a_x
-        may = middle_a_y
-        mbx = middle_b_x
-        mby = middle_b_y
-        ba = -1/angle_a
-        bb = -1/angle_b
-    elif (abs(angle_a) != 0 and abs(angle_c) != 0):
-        max = middle_a_x
-        may = middle_a_y
-        mbx = middle_c_x
-        mby = middle_c_y
-        ba = -1/angle_a
-        bb = -1/angle_b
-    elif (abs(angle_b) != 0 and abs(angle_c) != 0):
-        max = middle_b_x
-        may = middle_b_y
-        mbx = middle_c_x
-        mby = middle_c_y
-        ba = -1/angle_b
-        bb = -1/angle_c
+    xa = points_array[0][0]
+    ya = points_array[0][1]
+    xb = points_array[1][0]
+    yb = points_array[1][1]
+    xc = points_array[2][0]
+    yc = points_array[2][1]
 
-    a = (ba*max-may+mby-bb*mbx)/(ba-bb)
-    b = ba*(a - max) + may
+    center_x = (b*xa + a*xb + c*xc)/(a+b+c)
+    center_y = (b*ya + a*yb + c*yc)/(a+b+c)
 
-    return a,b
-
+    return center_x,center_y
 
 def square_circumscribed_circle(point1,point2,point3):
     '''Возвращает площадь описанной окружности'''

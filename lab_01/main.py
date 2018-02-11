@@ -27,7 +27,27 @@ def get_points(points_array):
 
     points = mp.find_min_square(points_arr) #вычисленные точки
 
-    print(points)
+    center_cc = mp.center_circumscribed_circle(points) #центр описанной окружности
+    radius_cc = mp.radius_circumscribed_circle(points) #радиус описанной окружности
+
+    x1 = 520 + center_cc[0] - radius_cc
+    y1 = 320 - center_cc[1] - radius_cc
+    x2 = 520 + center_cc[0] + radius_cc
+    y2 = 320 - center_cc[1] + radius_cc
+
+    center_ic = mp.center_inscribed_circle(points) #центр вписанной окружности
+    radius_ic = mp.radius_inscribed_circle(points) #радиус вписанной окружности
+
+    x3 = 520 + center_ic[0] - radius_ic
+    y3 = 320 - center_ic[1] - radius_ic
+    x4 = 520 + center_ic[0] + radius_ic
+    y4 = 320 - center_ic[1] + radius_ic
+    
+    print('center_cc',center_cc)
+    print('center_ic',center_ic)
+
+    canvas.create_oval(x1, y1, x2, y2, outline="red", 
+        fill="green", width=2)
 
     triangle_x1 = 520 + points[0][0]
     triangle_y1 = 320 - points[0][1]
@@ -36,11 +56,14 @@ def get_points(points_array):
     triangle_x3 = 520 + points[2][0]
     triangle_y3 = 320 - points[2][1]
 
-    print(triangle_x1,triangle_y1,triangle_x2,triangle_y2,
-          triangle_x3,triangle_y3)
+    #print(triangle_x1,triangle_y1,triangle_x2,triangle_y2,
+    #      triangle_x3,triangle_y3)
 
     canvas.create_polygon([triangle_x1,triangle_y1],[triangle_x2,triangle_y2],
                           [triangle_x3,triangle_y3],fill="red")
+
+    canvas.create_oval(x3, y3, x4, y4, outline="yellow", 
+        fill="white", width=2)
 
     #canvas.create_polygon([250.5,100],[200,150],[300,150],fill="yellow")
 
