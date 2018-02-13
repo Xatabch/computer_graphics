@@ -1,7 +1,8 @@
 import math as mt
 import numpy as np
 
-def size_length(point1,point2,point3):
+
+def size_length(point1, point2, point3):
     '''Возвращает длины трех сторон(a,b,c), проходящих через
        заданные вершины'''
 
@@ -12,7 +13,7 @@ def size_length(point1,point2,point3):
     return a, b, c
 
 
-def triangle_square(a,b,c):
+def triangle_square(a, b, c):
     '''Возращает площадь треугольника'''
     
     p = (a + b + c)/2 #полупериметр треугольника
@@ -77,8 +78,8 @@ def center_inscribed_circle(points_array):
     xc = points_array[2][0]
     yc = points_array[2][1]
 
-    v_ab = [xa-xb,ya-yb]
-    v_ac = [xa-xc,ya-yc]
+    v_ab = [xb-xa,yb-ya]
+    v_ac = [xc-xa,yc-ya]
 
     v_a = [v_ab[0]/a,v_ab[1]/a]
     v_b = [v_ac[0]/c,v_ac[1]/c]
@@ -93,25 +94,10 @@ def center_inscribed_circle(points_array):
 
     v_bk = [v_a[0]+v_b[0],v_a[1]+v_b[1]]
 
-    v_cb = [xb-xc,yb-yc]
-    v_ca = [xa-xc,ya-yc]
+    M1 = np.array([[v_ak[1], -v_ak[0]],
+                   [v_bk[1], -v_bk[0]]])
 
-    v_a = [v_cb[0]/b,v_cb[1]/b]
-    v_b = [v_ca[0]/a,v_ca[1]/a]
-
-    v_ck = [v_a[0]+v_b[0],v_a[1]+v_b[1]]
-
-    M1 = np.array([[2*v_ak[1]**2+2*v_bk[1]**2+2*v_ck[1]**2,
-                    2*v_ak[0]*v_ak[1]+v_bk[0]*v_bk[1]+2*v_ck[0]*v_ck[1]],
-                   [2*v_ak[1]*v_ak[0]+2*v_bk[1]*v_bk[0]+2*v_ck[1]*v_ck[0],
-                    2*v_ak[0]**2+2*v_bk[0]**2+2*v_ck[0]**2]])
-
-    v1 = np.array([-2*v_ak[0]*v_ak[1]*ya+2*v_ak[1]**2*xa-
-                   2*v_bk[0]*v_bk[1]*yb+2*v_bk[1]**2*xb-
-                   2*v_ck[0]*v_ck[1]*yc+2*v_ck[1]**2*xc,
-                   -2*v_ak[0]**2*ya+2*v_ak[1]*v_ak[0]*xa-
-                   2*v_bk[0]**2*yb+2*v_bk[1]*v_bk[0]*xb-
-                   2*v_ck[0]**2*yc+2*v_ck[1]*v_ck[0]*xc])
+    v1 = np.array([[v_ak[1]*xa-v_ak[0]*ya],[v_bk[1]*xb-v_bk[0]*yb]])
 
     res = np.linalg.solve(M1,v1)
 
@@ -181,8 +167,6 @@ def find_min_square(points_array):
                             points_of_minimum[0] = points_array[i]
                             points_of_minimum[1] = points_array[j]
                             points_of_minimum[2] = points_array[k]
-                    else:
-                        print('Вырожден',points_array[i],points_array[j],points_array[k])
 
 
     return points_of_minimum
