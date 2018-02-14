@@ -11,6 +11,9 @@ def get_points(all_points):
     global inscribed_circle1
     global table
     global answer
+    global K
+    global text_x
+    global text_y
 
     #entry_points.delete(0, 'end')
 
@@ -40,23 +43,34 @@ def get_points(all_points):
     answer.geometry('400x400')
 
     points = mp.find_min_square(all_points) #вычисленные точки
+    print(mp.size_length(points[0], points[1], points[2]))
+    for i in range(len(points)):
+        for j in range(len(points[i])):
+            if(points[i][j] < 50):
+                K = 50
+            else:
+                K = 1
 
     if 0 not in points:
         center_cc = mp.center_circumscribed_circle(points) #центр описанной окружности
         radius_cc = mp.radius_circumscribed_circle(points) #радиус описанной окружности
+        print('center_cc: ',center_cc)
+        print('radius_cc: ',radius_cc)
 
-        x1 = 520 + center_cc[0] - radius_cc
-        y1 = 320 - center_cc[1] - radius_cc
-        x2 = 520 + center_cc[0] + radius_cc
-        y2 = 320 - center_cc[1] + radius_cc
+        x1 = 520 + (center_cc[0] - radius_cc)*K
+        y1 = 320 - (center_cc[1] - radius_cc)*K
+        x2 = 520 + (center_cc[0] + radius_cc)*K
+        y2 = 320 - (center_cc[1] + radius_cc)*K
+
+        print('x1 y1 x2 y2: ',x1,y1,x2,y2)
 
         center_ic = mp.center_inscribed_circle(points)  #центр вписанной окружности
         radius_ic = mp.radius_inscribed_circle(points)  #радиус вписанной окружности
 
-        x3 = 520 + center_ic[0] - radius_ic
-        y3 = 320 - center_ic[1] - radius_ic
-        x4 = 520 + center_ic[0] + radius_ic
-        y4 = 320 - center_ic[1] + radius_ic
+        x3 = 520 + (center_ic[0] - radius_ic)*K
+        y3 = 320 - (center_ic[1] - radius_ic)*K
+        x4 = 520 + (center_ic[0] + radius_ic)*K
+        y4 = 320 - (center_ic[1] + radius_ic)*K
 
         #print('center_cc', center_cc)
         #print('center_ic', center_ic)
@@ -65,12 +79,12 @@ def get_points(all_points):
         circumscribed_circle1 = canvas.create_oval(x1, y1, x2, y2, outline="red",
             fill="green", width=2)
 
-        triangle_x1 = 520 + points[0][0]
-        triangle_y1 = 320 - points[0][1]
-        triangle_x2 = 520 + points[1][0]
-        triangle_y2 = 320 - points[1][1]
-        triangle_x3 = 520 + points[2][0]
-        triangle_y3 = 320 - points[2][1]
+        triangle_x1 = 520 + points[0][0]*K
+        triangle_y1 = 320 - points[0][1]*K
+        triangle_x2 = 520 + points[1][0]*K
+        triangle_y2 = 320 - points[1][1]*K
+        triangle_x3 = 520 + points[2][0]*K
+        triangle_y3 = 320 - points[2][1]*K
 
         triangle1 = canvas.create_polygon([triangle_x1,triangle_y1],[triangle_x2,triangle_y2],
                               [triangle_x3,triangle_y3],fill="red")
@@ -176,7 +190,6 @@ root.title('My app')
 root.geometry('1320x640')
 
 global all_points
-
 all_points = []
 
 canvas = Canvas(root, width=1040, height=640, bg='#002')
@@ -186,8 +199,8 @@ q = -500
 for y in range(21):
     k = 50 * y
     canvas.create_line(20+k,620,20+k,20,width=1,fill = '#191938')
-    if q != 0 and y != 20 and y != 0:
-        canvas.create_text(20+k, 300,text = str(q),fill='white')
+    #if q != 0 and y != 20 and y != 0:
+    #    canvas.create_text(20+k, 300,text = str(q),fill='white')
     if y != 20 and y != 0:
         canvas.create_line(20+k,310,20+k,315,width=1,fill='white')
     q += 50
@@ -196,8 +209,8 @@ q = -300
 for x in range(13):
     k = 50 * x
     canvas.create_line(20,20+k,1020,20+k,width=1,fill = '#191938')
-    if q != 0 and x != 12 and x != 0:
-        canvas.create_text(495, 20+k,text = str(q),fill='white')
+    #if q != 0 and x != 12 and x != 0:
+    #    canvas.create_text(495, 20+k,text = str(q),fill='white')
     if x != 12 and x != 0: 
         canvas.create_line(510,20+k,515,20+k,width=1,fill='white')
     q += 50
