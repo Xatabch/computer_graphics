@@ -57,14 +57,22 @@ def table_t(all_points):
 def create_points(all_points):
     '''Строит все имеющиеся точки'''
 
-    # построение всех заданных точек
+    K = 50 # коэффициент масштабирования
     for i in range(len(all_points)):
-        points_text = canvas.create_text((580 + all_points[i][0]), 310 - all_points[i][1],
+        for j in range(len(all_points[i])):
+            if(all_points[i][j] >= 50):
+                K=1
+            if(all_points[i][j] >= 7 and all_points[i][j] < 15):
+                K=30
+
+    for i in range(len(all_points)):
+        points_text = canvas.create_text((580 + all_points[i][0]*K), 310 - all_points[i][1]*K,
                                          text=(str(i) + '.' + '(' + str(all_points[i][0]) + ', ' +
                                                str(all_points[i][1]) + ')'), fill='white')
-        points = canvas.create_oval((520 + all_points[i][0] - 5), (320 - all_points[i][1] - 5),
-                                    (520 + all_points[i][0] + 5),
-                                    (320 - all_points[i][1] + 5), outline='red',
+
+        points = canvas.create_oval((520 + all_points[i][0]*K - 5), (320 - all_points[i][1]*K - 5),
+                                    (520 + all_points[i][0]*K + 5),
+                                    (320 - all_points[i][1]*K + 5), outline='red',
                                     fill='red', width=1)
         array_points.append(points)
         array_points.append(points_text)
@@ -86,7 +94,15 @@ def get_points(all_points):
         calculated_points = mp.find_min_square(all_points) #вычисленные точки
 
         print('calculated',calculated_points[0], calculated_points[1], calculated_points[2])
-        K=1
+
+        K = 50  # коэффициент масштабирования
+        for i in range(len(all_points)):
+            for j in range(len(all_points[i])):
+                if (all_points[i][j] >= 50):
+                    K = 1
+                elif (all_points[i][j] >= 7):
+                    K = 30
+
         if 0 not in calculated_points:
             answer = Tk()
             answer.title('Results')
@@ -165,7 +181,6 @@ def get_points(all_points):
             error_window('ВЫРОЖДЕННЫЙ ТРЕУГОЛЬНИК!')
     elif len(all_points) > 0 and len(all_points) < 3:
         create_points(all_points)
-    else:
         error_window('НЕДОСТАТОЧНОЕ КОЛИЧЕСТВО ТОЧЕК!')
 
 
@@ -179,11 +194,19 @@ def filtered_data(points_array):
 
     for i in range(len(points_array)):
         if points_array[i] != '':
-            all_points.append([float(points_array[i].split(',')[0]),
-                               float(points_array[i].split(',')[1])])
+            if len(points_array[i].split(' ')) <= 1 \
+                    and len(points_array[i].split(',')) == 2:
+                if points_array[i].split(',')[0] != '' and points_array[i].split(',')[1] != '' \
+                        and [float(points_array[i].split(',')[0]), \
+                                float(points_array[i].split(',')[1])] not in all_points:
+                    all_points.append([float(points_array[i].split(',')[0]),
+                                float(points_array[i].split(',')[1])])
+
 
 
 def start(points_array):
+    '''Обертка для функций фильтрации и вычисления треугольников'''
+
     filtered_data(points_array)
     get_points(all_points)
 
@@ -193,24 +216,6 @@ def delete_all_points():
 
     clear()
     all_points.clear()
-    #if len(all_points) > 0:
-    #    try:
-    #        for i in range(len(array_points)):
-    #            canvas.delete(array_points[i])
-    #    except:
-    #        error_window('ТОЧЕК НЕТ!')
-
-    #    try:
-    #        canvas.delete(circumscribed_circle1)
-    #        canvas.delete(triangle1)
-    #        canvas.delete(inscribed_circle1)
-    #    except:
-    #        print('') # подумай над текстом сообщения
-    #    all_points.clear()
-    #else:
-    #    error_window('ТОЧЕК НЕТ!')
-    #answer.destroy()
-    #table.destroy()
 
 
 def add_and_reset(points_array):
@@ -219,16 +224,6 @@ def add_and_reset(points_array):
 
     if points_array != '':
         clear()
-        #if len(all_points) > 2:
-        #    try:
-        #        canvas.delete(circumscribed_circle1)
-        #        canvas.delete(triangle1)
-        #        canvas.delete(inscribed_circle1)
-        #        for i in range(len(array_points)):
-        #            canvas.delete(array_points[i])
-        #    except:
-        #        print() # подумай над текстом сообщения
-
         start(points_array)
     else:
         error_window('ВЫ НИЧЕГО НЕ ВВЕЛИ!')
@@ -321,8 +316,8 @@ canvas.create_text(500,300,text='0',fill='white')
 
 
 
-label_entry = Label(root, text="Введите точки в \nпредложенном формате,\nразделяя их ';'")
-label_entry.place(x = 50, y = 10)
+label_entry = Label(root, text="Введите точки в \nпредложенном формате: X,Y\nразделяя их ';'")
+label_entry.place(x = 30, y = 10)
 label_points = Label(root, text='Точки X,Y: ')
 label_points.place(x = 10, y = 100)
 
@@ -333,25 +328,44 @@ btn_calc = Button(root, text='Рассчитать')
 btn_calc.bind('<Button-1>', lambda event: start(str(entry_points.get())))
 btn_calc.place(x = 10, y = 150)
 
-btn_clean = Button(root, text='Вывести таблицу значений')
-btn_clean.bind('<Button-1>', lambda event: table_t(all_points))
-btn_clean.place(x = 10, y = 210)
+btn_tab = Button(root, text='Вывести таблицу значений')
+btn_tab.bind('<Button-1>', lambda event: table_t(all_points))
+btn_tab.place(x = 10, y = 210)
+
+text_tab = Label(root,text="Выводит таблицу со \nзначениями всех точек",justify="left")
+text_tab.place(x=21, y=240)
 
 btn_clean = Button(root, text='Удалить все точки')
 btn_clean.bind('<Button-1>', lambda event: delete_all_points())
-btn_clean.place(x = 10, y = 250)
+btn_clean.place(x = 10, y = 290)
+
+text_clean = Label(root,text="Удаляет все ранее \nзаданные точки",justify="left")
+text_clean.place(x=21, y=320)
 
 btn_add = Button(root, text='Добавить точки')
 btn_add.bind('<Button-1>', lambda event: add_and_reset(str(entry_points.get())))
-btn_add.place(x=10, y= 290)
+btn_add.place(x=10, y= 370)
+
+text_add = Label(root,text="Добавляет точку или точки \nвведенные в поле выше\nпри вводе одной"
+                           " точки \nзаканчивать ;",justify="left")
+text_add.place(x=21, y=400)
 
 btn_add = Button(root, text='Удалить точку(и)')
 btn_add.bind('<Button-1>', lambda event: delete_points(str(entry_points.get())))
-btn_add.place(x=10, y= 330)
+btn_add.place(x=10, y= 480)
+
+
+text_add = Label(root,text="Удаляет заданную точку\n(введите координаты в \nполе выше)",justify="left")
+text_add.place(x=21, y=510)
 
 btn_add = Button(root, text='Редактировать точку')
 btn_add.bind('<Button-1>', lambda event: edit_points(str(entry_points.get())))
-btn_add.place(x=10, y= 370)
+btn_add.place(x=10, y= 580)
+
+text_add = Label(root,text="Редактирует заданную точку\n(введите координаты в формате:\n "
+                           "координаты точки которую \nхотите изменить:новые \nкоординаты заданной точки)",
+                 justify="left")
+text_add.place(x=21, y=610)
 
 
 root.mainloop()
