@@ -93,8 +93,6 @@ def get_points(all_points):
     if len(all_points) > 2:
         calculated_points = mp.find_min_square(all_points) #вычисленные точки
 
-        print('calculated',calculated_points[0], calculated_points[1], calculated_points[2])
-
         K = 50  # коэффициент масштабирования
         for i in range(len(all_points)):
             for j in range(len(all_points[i])):
@@ -110,15 +108,11 @@ def get_points(all_points):
 
             center_cc = mp.center_circumscribed_circle(calculated_points) #центр описанной окружности
             radius_cc = mp.radius_circumscribed_circle(calculated_points) #радиус описанной окружности
-            print('center_cc: ',center_cc)
-            print('radius_cc: ',radius_cc)
 
             x1 = 520 + (center_cc[0] - radius_cc)*K
             y1 = 320 - (center_cc[1] - radius_cc)*K
             x2 = 520 + (center_cc[0] + radius_cc)*K
             y2 = 320 - (center_cc[1] + radius_cc)*K
-
-            print('x1 y1 x2 y2: ',x1,y1,x2,y2)
 
             center_ic = mp.center_inscribed_circle(calculated_points)  #центр вписанной окружности
             radius_ic = mp.radius_inscribed_circle(calculated_points)  #радиус вписанной окружности

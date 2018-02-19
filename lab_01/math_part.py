@@ -18,7 +18,7 @@ def triangle_square(a, b, c):
     
     p = (a + b + c)/2 #полупериметр треугольника
     
-    return (mt.sqrt(p*(p - a)*(p - b)*(p - c)))
+    return ((p*(p - a)*(p - b)*(p - c))**(1/2))
 
 
 def radius_circumscribed_circle(points_array):
@@ -152,7 +152,6 @@ def find_min_square(points_array):
 
     points_of_minimum = [0,0,0]
     min_square = 1000000
-    check = 0
     for i in range(len(points_array)):
         for j in range(len(points_array)):
             for k in range(len(points_array)):
