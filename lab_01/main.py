@@ -54,16 +54,18 @@ def table_t(all_points):
         error_window('ТАБЛИЦА ПУСТА!')
 
 
-def create_points(all_points):
+def create_points(K,all_points):
     '''Строит все имеющиеся точки'''
 
-    K = 50 # коэффициент масштабирования
-    for i in range(len(all_points)):
-        for j in range(len(all_points[i])):
-            if(all_points[i][j] >= 50):
-                K=1
-            if(all_points[i][j] >= 7 and all_points[i][j] < 15):
-                K=30
+    #K = 1 # коэффициент масштабирования
+    #for i in range(len(all_points)):
+    #    for j in range(len(all_points[i])):
+            #if(all_points[i][j] >= 50):
+            #    K=1
+            #if (all_points[i][j] >= 20 and all_points[i][j] <= 40):
+            #    K = 3
+            #if(all_points[i][j] >= 7 and all_points[i][j] < 15):
+            #    K=30
 
     for i in range(len(all_points)):
         points_text = canvas.create_text((580 + all_points[i][0]*K), 310 - all_points[i][1]*K,
@@ -94,12 +96,22 @@ def get_points(all_points):
         calculated_points = mp.find_min_square(all_points) #вычисленные точки
 
         K = 50  # коэффициент масштабирования
-        for i in range(len(all_points)):
-            for j in range(len(all_points[i])):
-                if (all_points[i][j] >= 50):
-                    K = 1
-                elif (all_points[i][j] >= 7):
-                    K = 30
+        max = -1000
+        if 0 not in calculated_points:
+            for i in range(len(calculated_points)):
+                for j in range(len(calculated_points[i])):
+                    print(abs(calculated_points[i][j]))
+                    if abs(calculated_points[i][j]) > max:
+                        max = abs(calculated_points[i][j])
+
+            if (max >= 50):
+                K = 1
+            elif (max >= 20 and max <= 40):
+                K = 3
+            elif (max >= 7):
+                K = 30
+
+            print(K,max)
 
         if 0 not in calculated_points:
             answer = Tk()
@@ -167,14 +179,14 @@ def get_points(all_points):
             square_circ_circle = Label(answer, text=str(round(abs(circumscribed_circle - inscribed_circle), 3)))
             square_circ_circle.place(x=270, y=170)
 
-            create_points(all_points)
+            create_points(K,all_points)
 
             answer.mainloop()
         else:
-            create_points(all_points)
+            create_points(K,all_points)
             error_window('ВЫРОЖДЕННЫЙ ТРЕУГОЛЬНИК!')
     elif len(all_points) > 0 and len(all_points) < 3:
-        create_points(all_points)
+        create_points(K,all_points)
         error_window('НЕДОСТАТОЧНОЕ КОЛИЧЕСТВО ТОЧЕК!')
 
 
