@@ -13,9 +13,11 @@ def clear():
             error_window('ТОЧЕК НЕТ!')
 
         try:
+            print('YES')
             canvas.delete(circumscribed_circle1)
             canvas.delete(triangle1)
             canvas.delete(inscribed_circle1)
+            print(' ')
         except:
             print('') # подумай над текстом сообщения
 
@@ -39,11 +41,18 @@ def table_t(all_points):
     global table
 
     if len(all_points) > 0:
-        size = '150x' + str(len(all_points) * 50)
+        size = '350x' + str(len(all_points) * 50)
 
         table = Tk()
         table.title('Table')
         table.geometry(size)
+
+        #height = 5
+        #width = 5
+        #for i in range(height):  # Rows
+        #    for j in range(width):  # Columns
+        #        b = Entry(table, text="")
+        #        b.grid(row=i, column=j)
 
         tb = DataFrame(all_points, columns=['x', 'y'])
         lb = Label(table, text=str(tb))
@@ -157,8 +166,10 @@ def get_points(all_points):
             for i in range(len(calculated_points)):
                 indexes[i] = all_points.index(calculated_points[i])
 
-            circumscribed_circle = mp.square_circumscribed_circle(calculated_points[0], calculated_points[1], calculated_points[2])
-            inscribed_circle = mp.square_inscribed_circle(calculated_points[0], calculated_points[1], calculated_points[2])
+            circumscribed_circle = mp.square_circumscribed_circle(calculated_points[0],
+                                                                  calculated_points[1], calculated_points[2])
+            inscribed_circle = mp.square_inscribed_circle(calculated_points[0], calculated_points[1],
+                                                          calculated_points[2])
 
             table_result_points = DataFrame(calculated_points,columns=['x','y'],index=indexes)
             res_points = Label(answer, text=str(table_result_points))
@@ -186,7 +197,7 @@ def get_points(all_points):
             create_points(K,all_points)
             error_window('ВЫРОЖДЕННЫЙ ТРЕУГОЛЬНИК!')
     elif len(all_points) > 0 and len(all_points) < 3:
-        create_points(K,all_points)
+        create_points(50,all_points)
         error_window('НЕДОСТАТОЧНОЕ КОЛИЧЕСТВО ТОЧЕК!')
 
 
@@ -194,9 +205,10 @@ def get_points(all_points):
 def filtered_data(points_array):
     '''Преобразует информацию к нормальному виду для добавления'''
 
-    entry_points.delete(0, 'end')
+    #entry_points_x1.delete(0, 'end')
+    #entry_points_y1.delete(0, 'end')
 
-    points_array = list(points_array.split(';'))
+    points_array = points_array.split(';')
 
     for i in range(len(points_array)):
         if points_array[i] != '':
@@ -208,11 +220,33 @@ def filtered_data(points_array):
                     all_points.append([float(points_array[i].split(',')[0]),
                                 float(points_array[i].split(',')[1])])
 
+    q = -500
+    for y in range(21):
+        k = 50 * y
+        canvas.create_line(20 + k, 620, 20 + k, 20, width=1, fill='#191938')
+        if y != 20 and y != 0:
+            canvas.create_line(20 + k, 310, 20 + k, 315, width=1, fill='white')
+        q += 50
+
+    q = -300
+    for x in range(13):
+        k = 50 * x
+        canvas.create_line(20, 20 + k, 1020, 20 + k, width=1, fill='#191938')
+        if x != 12 and x != 0:
+            canvas.create_line(510, 20 + k, 515, 20 + k, width=1, fill='white')
+        q += 50
+
+    canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='white')  # ось У
+    canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='white')  # ось X
+    canvas.create_text(500, 300, text='0', fill='white')
+
 
 
 def start(points_array):
     '''Обертка для функций фильтрации и вычисления треугольников'''
 
+
+    canvas.delete('all')
     filtered_data(points_array)
     get_points(all_points)
 
@@ -239,16 +273,12 @@ def delete_points(points_array):
     '''Удаляет заданные точки'''
 
     if points_array != '':
-        entry_points.delete(0, 'end')
-        points_array = list(points_array.split(';'))
+        points_array = list(points_array.split(','))
         points_arr = []
+        points_arr.append([float(points_array[0]), float(points_array[1])])
         count = 0
 
-        for i in range(len(points_array)):
-            if points_array[i] != '':
-                points_arr.append([float(points_array[i].split(',')[0]),
-                                   float(points_array[i].split(',')[1])])
-
+        print(points_arr)
         for i in range(len(points_arr)):
             if points_arr[i] in all_points:
                 all_points.remove(points_arr[i])
@@ -267,7 +297,8 @@ def edit_points(points_array):
     '''Редактирует координаты введенной точки'''
 
     if points_array != '':
-        entry_points.delete(0, 'end')
+        #entry_points_x1.delete(0, 'end')
+        #entry_points_y1.delete(0, 'end')
         points_array = list(points_array.split(':'))
 
         delete_array = []
@@ -322,56 +353,104 @@ canvas.create_text(500,300,text='0',fill='white')
 
 
 
-label_entry = Label(root, text="Введите точки в \nпредложенном формате: X,Y\nразделяя их ';'")
-label_entry.place(x = 30, y = 10)
-label_points = Label(root, text='Точки X,Y: ')
-label_points.place(x = 10, y = 100)
+#label_entry = Label(root, text="Введите точки в \nпредложенном формате: X,Y\nразделяя их ';'")
+#label_entry.place(x = 30, y = 10)
+label_points = Label(root, text='X')
+label_points.place(x = 54, y = 10)
 
-entry_points = Entry(root)
-entry_points.place(x=10, y=120)
+label_points = Label(root, text='Y')
+label_points.place(x = 194, y = 10)
 
-btn_calc = Button(root, text='Рассчитать')
-btn_calc.bind('<Button-1>', lambda event: start(str(entry_points.get())))
-btn_calc.place(x = 10, y = 150)
+entry_points_x1 = Entry(root,width=11)
+entry_points_x1.place(x=10, y=30)
 
-btn_tab = Button(root, text='Вывести таблицу значений')
+entry_points_y1 = Entry(root,width=11)
+entry_points_y1.place(x=150, y=30)
+
+entry_points_x2 = Entry(root,width=11)
+entry_points_x2.place(x=10, y=60)
+
+entry_points_y2 = Entry(root,width=11)
+entry_points_y2.place(x=150, y=60)
+
+entry_points_x3 = Entry(root,width=11)
+entry_points_x3.place(x=10, y=90)
+
+entry_points_y3 = Entry(root,width=11)
+entry_points_y3.place(x=150, y=90)
+
+
+btn_calc = Button(root, text='Рассчитать', width=26)
+btn_calc.bind('<Button-1>', lambda event: start(str(entry_points_x1.get())+
+                                                ','+str(entry_points_y1.get())+';'+
+                                                str(entry_points_x2.get())+','+str(entry_points_y2.get())+';'+
+                                                str(entry_points_x3.get())+','+str(entry_points_y3.get())))
+btn_calc.place(x = 10, y = 120)
+
+btn_add = Button(root, text='Добавить точки', width=26)
+btn_add.bind('<Button-1>', lambda event: add_and_reset(str(entry_points_x1.get())+
+                                                ','+str(entry_points_y1.get())+';'+
+                                                str(entry_points_x2.get())+','+str(entry_points_y2.get())+';'+
+                                                str(entry_points_x3.get())+','+str(entry_points_y3.get())))
+btn_add.place(x=10, y= 160)
+
+btn_tab = Button(root, text='Вывести таблицу значений', width=26)
 btn_tab.bind('<Button-1>', lambda event: table_t(all_points))
-btn_tab.place(x = 10, y = 210)
+btn_tab.place(x = 10, y = 250)
 
-text_tab = Label(root,text="Выводит таблицу со \nзначениями всех точек",justify="left")
-text_tab.place(x=21, y=240)
-
-btn_clean = Button(root, text='Удалить все точки')
+btn_clean = Button(root, text='Удалить все точки', width=26)
 btn_clean.bind('<Button-1>', lambda event: delete_all_points())
 btn_clean.place(x = 10, y = 290)
 
-text_clean = Label(root,text="Удаляет все ранее \nзаданные точки",justify="left")
-text_clean.place(x=21, y=320)
+entry_points_x = Entry(root,width=11)
+entry_points_x.place(x=10, y=380)
 
-btn_add = Button(root, text='Добавить точки')
-btn_add.bind('<Button-1>', lambda event: add_and_reset(str(entry_points.get())))
-btn_add.place(x=10, y= 370)
+entry_points_y = Entry(root,width=11)
+entry_points_y.place(x=150, y=380)
 
-text_add = Label(root,text="Добавляет точку или точки \nвведенные в поле выше\nпри вводе одной"
-                           " точки \nзаканчивать ;",justify="left")
-text_add.place(x=21, y=400)
+btn_add = Button(root, text='Удалить точку', width=26)
+btn_add.bind('<Button-1>', lambda event: delete_points(str(entry_points_x.get())+','+str(entry_points_y.get())))
+btn_add.place(x=10, y= 330)
 
-btn_add = Button(root, text='Удалить точку(и)')
-btn_add.bind('<Button-1>', lambda event: delete_points(str(entry_points.get())))
-btn_add.place(x=10, y= 480)
+label_points = Label(root, text='X')
+label_points.place(x = 54, y = 360)
 
+label_points = Label(root, text='Y')
+label_points.place(x = 194, y = 360)
 
-text_add = Label(root,text="Удаляет заданную точку\n(введите координаты в \nполе выше)",justify="left")
-text_add.place(x=21, y=510)
+label_points = Label(root, text='Старые значения: ')
+label_points.place(x = 10, y = 460)
 
-btn_add = Button(root, text='Редактировать точку')
-btn_add.bind('<Button-1>', lambda event: edit_points(str(entry_points.get())))
-btn_add.place(x=10, y= 580)
+label_points = Label(root, text='X')
+label_points.place(x = 54, y = 490)
 
-text_add = Label(root,text="Редактирует заданную точку\n(введите координаты в формате:\n "
-                           "координаты точки которую \nхотите изменить:новые \nкоординаты заданной точки)",
-                 justify="left")
-text_add.place(x=21, y=610)
+label_points = Label(root, text='Y')
+label_points.place(x = 194, y = 490)
 
+entry_points_x4 = Entry(root,width=11)
+entry_points_x4.place(x=10, y=510)
+
+entry_points_y4 = Entry(root,width=11)
+entry_points_y4.place(x=150, y=510)
+
+label_points = Label(root, text='Новые значения: ')
+label_points.place(x = 10, y = 540)
+
+label_points = Label(root, text='X')
+label_points.place(x = 54, y = 570)
+
+label_points = Label(root, text='Y')
+label_points.place(x = 194, y = 570)
+
+entry_points_x5 = Entry(root,width=11)
+entry_points_x5.place(x=10, y=590)
+
+entry_points_y5 = Entry(root,width=11)
+entry_points_y5.place(x=150, y=590)
+
+btn_add = Button(root, text='Редактировать точку', width=26)
+btn_add.bind('<Button-1>', lambda event: edit_points(str(entry_points_x4.get())+','+str(entry_points_y4.get())+
+                                                     ':'+str(entry_points_x5.get())+','+str(entry_points_y5.get())))
+btn_add.place(x=10, y= 420)
 
 root.mainloop()
