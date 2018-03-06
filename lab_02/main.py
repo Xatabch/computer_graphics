@@ -3,8 +3,8 @@ from sympy import *
 from math import *
 from math_part import *
 
-def read_array():
-    f = open("array",'r')
+def read_array(file):
+    f = open(file, 'r')
     params_array = []
     tmp = []
     tmp = f.read().split('\n')
@@ -33,8 +33,8 @@ def read_array():
 
     return params_array
 
-def write_array(param_array):
-    f = open("array", "w")
+def write_array(file, param_array):
+    f = open(file, "w")
     mask = [14, 15, 16]
     for i in range(len(param_array)):
         if i not in mask:
@@ -72,36 +72,20 @@ def draw_ellipse(center, a, b, phi, color):
 def draw_cross(center, a, b, phi, color):
     '''Рисует перекрестие'''
 
-    x1 = (center[0] - a*(sqrt(2)/2))
-    y1 = (center[1] + b*(sqrt(2)/2))
-    x2 = (center[0] + a*(sqrt(2)/2))
-    y2 = (center[1] - b*(sqrt(2)/2))
-    x3 = (center[0] + a*(sqrt(2)/2))
-    y3 = (center[1] + b*(sqrt(2)/2))
-    x4 = (center[0] - a*(sqrt(2)/2))
-    y4 = (center[1] - b*(sqrt(2)/2))
+    x = (-a*(sqrt(2)/2))
+    y = (b*(sqrt(2)/2))
 
-    if center[0] == 0 and center[1] == 0:
-        x5 = 520 + (x1 * cos(radians(phi)) + y1 * (-sin(radians(phi))))
-        y5 = 317 + (x1 * sin(radians(phi)) + y1 * cos(radians(phi)))
-        x6 = 520 + (x2 * cos(radians(phi)) + y2 * (-sin(radians(phi))))
-        y6 = 317 + (x2 * sin(radians(phi)) + y2 * cos(radians(phi)))
-        x7 = 520 + (x3 * cos(radians(phi)) + y3 * (-sin(radians(phi))))
-        y7 = 317 + (x3 * sin(radians(phi)) + y3 * cos(radians(phi)))
-        x8 = 520 + (x4 * cos(radians(phi)) + y4 * (-sin(radians(phi))))
-        y8 = 317 + (x4 * sin(radians(phi)) + y4 * cos(radians(phi)))
-    else:
-        x5 = 520 + center[0] + (-a*(sqrt(2)/2) * cos(radians(phi)) + b * (sqrt(2)/2) * (-sin(radians(phi))))
-        y5 = 317 + center[1] + (-a*(sqrt(2)/2) * sin(radians(phi)) +b*(sqrt(2)/2) * cos(radians(phi)))
-        x6 = 520 + center[0] + (a*(sqrt(2)/2) * cos(radians(phi)) - b * (sqrt(2)/2) * (-sin(radians(phi))))
-        y6 = 317 + center[1] + (a*(sqrt(2)/2) * sin(radians(phi)) - b*(sqrt(2)/2) * cos(radians(phi)))
-        x7 = 520 + center[0] + (a*(sqrt(2)/2) * cos(radians(phi)) + b * (sqrt(2)/2) * (-sin(radians(phi))))
-        y7 = 317 + center[1] + (a*(sqrt(2)/2) * sin(radians(phi)) + b*(sqrt(2)/2) * cos(radians(phi)))
-        x8 = 520 + center[0] + (-a*(sqrt(2)/2) * cos(radians(phi)) - b * (sqrt(2)/2) * (-sin(radians(phi))))
-        y8 = 317 + center[1] + (-a*(sqrt(2)/2) * sin(radians(phi)) - b*(sqrt(2)/2) * cos(radians(phi)))
+    x1 = 520 + center[0] + (-x * cos(radians(phi)) + y * (-sin(radians(phi))))
+    y1 = 317 + center[1] + (-x * sin(radians(phi)) + y * cos(radians(phi)))
+    x2 = 520 + center[0] + (x * cos(radians(phi)) - y * (-sin(radians(phi))))
+    y2 = 317 + center[1] + (x * sin(radians(phi)) - y * cos(radians(phi)))
+    x3 = 520 + center[0] + (x * cos(radians(phi)) + y * (-sin(radians(phi))))
+    y3 = 317 + center[1] + (x * sin(radians(phi)) + y * cos(radians(phi)))
+    x4 = 520 + center[0] + (-x * cos(radians(phi)) - y * (-sin(radians(phi))))
+    y4 = 317 + center[1] + (-x * sin(radians(phi)) - y * cos(radians(phi)))
 
-    cross_points1 = [[x5, y5],[x6, y6]]
-    cross_points2 = [[x7, y7], [x8, y8]]
+    cross_points1 = [[x1, y1],[x2, y2]]
+    cross_points2 = [[x3, y3], [x4, y4]]
     canvas.create_line(cross_points1, fill=color, width=3)
     canvas.create_line(cross_points2, fill=color, width=3)
 
@@ -152,7 +136,8 @@ def transf(dx, dy):
 
     clean()
 
-    params_array = read_array()
+    params_array = read_array("array")
+    write_array("step_back", params_array)
 
     transference_array = transference(params_array, dx, dy)
 
@@ -169,13 +154,14 @@ def transf(dx, dy):
     canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='black')  # ось У
     canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='black')  # ось X
 
-    write_array(transference_array)
+    write_array("array", transference_array)
 
 def scale(xm, ym, kx, ky):
 
     clean()
 
-    params_array = read_array()
+    params_array = read_array("array")
+    write_array("step_back", params_array)
 
     # новые каоординаты после масштабирования
     scaling_array = scaling(params_array, xm, ym, kx, ky)
@@ -193,13 +179,14 @@ def scale(xm, ym, kx, ky):
     canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='black')  # ось У
     canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='black')  # ось X
 
-    write_array(scaling_array)
+    write_array("array", scaling_array)
 
 def rot(xm, ym, phi):
 
     clean()
 
-    params_array = read_array()
+    params_array = read_array("array")
+    write_array("step_back", params_array)
 
     rotate_array = rotate(params_array, xm, ym, phi)
 
@@ -211,17 +198,55 @@ def rot(xm, ym, phi):
                   rotate_array[8], rotate_array[9],
                   rotate_array[10],rotate_array[11],
                   rotate_array[12], rotate_array[13],
-                  rotate_array[14], rotate_array[15], phi)
+                  rotate_array[14], rotate_array[15], rotate_array[16])
 
     canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='black')  # ось У
     canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='black')  # ось X
 
-    write_array(rotate_array)
+    write_array("array", rotate_array)
 
 
 def clean():
     canvas.delete('all')
 
+def reset():
+
+    clean()
+
+    zero_params_array = [[-145, 0, 1], [35, 35, 1], [0, 85, 1], [35, 35, 1], [145, 0, 1], [35, 35, 1],
+                         [0, -85, 1], [35, 35, 1], [0, 0, 1], [20, 20, 1], [0, 0, 1],
+                         [180, 120, 1], [0, 0, 1], [110, 50, 1], [[0, 0, 1], [-180, 180, 1], [-70, 180, 1]],
+                         [[0, 0, 1], [180, 180, 1], [70, 180, 1]], 0]
+
+    write_array("array", zero_params_array)
+
+    create_figure([-145, 0], [35, 35], [0, 85], [35, 35], [145, 0], [35, 35], [0, -85], [35, 35],
+                                [0, 0], [20, 20], [0, 0], [180, 120], [0, 0], [110, 50],
+                                [[0, 0], [-180, 180], [-70, 180]],
+                                [[0, 0], [180, 180], [70, 180]], 0)
+
+    canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='black')  # ось У
+    canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='black')  # ось X
+
+def step_back():
+
+    clean()
+
+    params_array = read_array("step_back")
+
+    create_figure(params_array[0], params_array[1],
+                  params_array[2], params_array[3],
+                  params_array[4], params_array[5],
+                  params_array[6], params_array[7],
+                  params_array[8], params_array[9],
+                  params_array[10], params_array[11],
+                  params_array[12], params_array[13],
+                  params_array[14], params_array[15], params_array[16])
+
+    write_array("array", params_array)
+
+    canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='black')  # ось У
+    canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='black')  # ось X
 
 root = Tk()
 root.title('My app')
@@ -242,7 +267,7 @@ zero_params_array = [[-145, 0, 1], [35, 35, 1], [0, 85, 1], [35, 35, 1], [145, 0
                      [180, 120, 1], [0, 0, 1], [110, 50, 1], [[0, 0, 1], [-180, 180, 1], [-70, 180, 1]],
                     [[0, 0, 1], [180, 180, 1], [70, 180, 1]], 0]
 
-write_array(zero_params_array)
+write_array("array",zero_params_array)
 
 # отрисовка фигуры с начальными параметрами
 zero_figure = create_figure([-145, 0], [35,35], [0, 85], [35,35], [145, 0], [35,35], [0, -85], [35,35],
@@ -305,10 +330,18 @@ label_rt_ang.place(x=x, y=y+400)
 entry_rt_ang = Entry(root, width=24)
 entry_rt_ang.place(x=x+28, y=y+400)
 
-btn_rt = Button(root, text='Поворот', width=25)
-btn_rt.bind('<Button-1>', lambda event: rot(float(entry_rt_cent_x.get()), float(entry_rt_cent_y.get()),
+btn_res = Button(root, text='Поворот', width=25)
+btn_res.bind('<Button-1>', lambda event: rot(float(entry_rt_cent_x.get()), float(entry_rt_cent_y.get()),
                                               float(entry_rt_ang.get())))
-btn_rt.place(x=x, y=y+440)
+btn_res.place(x=x, y=y+440)
+
+btn_res = Button(root, text='Сброс', width=25)
+btn_res.bind('<Button-1>', lambda event: reset())
+btn_res.place(x=x, y=y+470)
+
+btn_res = Button(root, text='Шаг назад', width=25)
+btn_res.bind('<Button-1>', lambda event: step_back())
+btn_res.place(x=x, y=y+500)
 
 
 

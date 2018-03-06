@@ -139,6 +139,9 @@ def rotate(zero_params_array, xm, ym, phi):
         result_params_array = transference(result_params_array, xm, ym)
 
 
+    result_params_array[16] += phi
+
+
 
     return result_params_array
 
