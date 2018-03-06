@@ -49,27 +49,50 @@ def transference(zero_params_array, dx, dy):
 
 def scaling(zero_params_array, xm, ym, kx, ky):
 
+    # "нормирую" ось координат
+    ym *= -1
+
     # матрица преобразований
     M = [[kx, 0, 0],[0, ky, 0],[0, 0, 1]]
 
     result_params_array = []
-
-    for i in range(len(zero_params_array)-1):
-        if zero_params_array[i][2] == 1:
-            matrix = [zero_params_array[i]]
-            result = multiply_matrix(1,3,3,3,matrix,M)
-            result_params_array.append(result[0])
-        else:
-            result_params_array.append([])
-            for j in range(len(zero_params_array[i])):
-                matrix = [zero_params_array[i][j]]
+    if xm == 0 and ym == 0:
+        for i in range(len(zero_params_array)-1):
+            if zero_params_array[i][2] == 1:
+                matrix = [zero_params_array[i]]
                 result = multiply_matrix(1,3,3,3,matrix,M)
-                result_params_array[i].append(result[0])
+                result_params_array.append(result[0])
+            else:
+                result_params_array.append([])
+                for j in range(len(zero_params_array[i])):
+                    matrix = [zero_params_array[i][j]]
+                    result = multiply_matrix(1,3,3,3,matrix,M)
+                    result_params_array[i].append(result[0])
+        result_params_array.append(zero_params_array[16])
+    else:
+        # 1.Смещаю фигуру от начала на те xm*(1-kx)  и ym*(1-ky) которые мне задали
+        transf_zero_params_array = transference(zero_params_array, xm*(1-kx), ym*(1-ky))
+        # 2.Масштабирую относительно нового центра
+        for i in range(len(transf_zero_params_array)-1):
+            if transf_zero_params_array[i][2] == 1:
+                matrix = [transf_zero_params_array[i]]
+                result = multiply_matrix(1,3,3,3,matrix,M)
+                result_params_array.append(result[0])
+            else:
+                result_params_array.append([])
+                for j in range(len(transf_zero_params_array[i])):
+                    matrix = [transf_zero_params_array[i][j]]
+                    result = multiply_matrix(1,3,3,3,matrix,M)
+                    result_params_array[i].append(result[0])
+        result_params_array.append(zero_params_array[16])
 
     return result_params_array
 
 
 def rotate(zero_params_array, xm, ym, phi):
+
+    # "нормирую" ось координат
+    ym *= -1
 
     # маска содержить индексы параметров фигуры, которые нужно преобразовывать
     mask = [0, 2, 4, 6, 8, 10, 12, 14, 15]

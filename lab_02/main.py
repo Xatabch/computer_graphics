@@ -3,6 +3,57 @@ from sympy import *
 from math import *
 from math_part import *
 
+def read_array():
+    f = open("array",'r')
+    params_array = []
+    tmp = []
+    tmp = f.read().split('\n')
+    mask = [14, 15, 17]
+
+
+    for i in range(len(tmp)):
+        if i not in mask:
+            params_array.append(tmp[i].split(' '))
+        elif i in mask and tmp[i] != '':
+            a = tmp[i].split(',')
+            b = []
+            for j in range(len(a)):
+                b.append(a[j].split(' '))
+            params_array.append(b)
+
+    for i in range(len(params_array)):
+        for j in range(len(params_array[i])):
+            if i not in mask:
+                params_array[i][j] = float(params_array[i][j])
+            else:
+                for k in range(len(params_array[i][j])):
+                    params_array[i][j][k] = float(params_array[i][j][k])
+
+    params_array[16] = params_array[16][0]
+
+    return params_array
+
+def write_array(param_array):
+    f = open("array", "w")
+    mask = [14, 15, 16]
+    for i in range(len(param_array)):
+        if i not in mask:
+            for j in range(len(param_array[i])):
+                f.write(str(param_array[i][j]))
+                if j != len(param_array[i]) - 1:
+                    f.write(' ')
+            f.write('\n')
+        elif i in mask and i != 16:
+            for z in range(len(param_array[i])):
+                for k in range(len(param_array[i][z])):
+                    f.write(str(param_array[i][z][k]))
+                    if k != len(param_array[i][z]) - 1:
+                        f.write(' ')
+                if z != len(param_array[i]) - 1:
+                    f.write(',')
+            f.write('\n')
+    f.write(str(param_array[16]))
+
 def draw_ellipse(center, a, b, phi, color):
     '''Рисует эллипс'''
 
@@ -97,6 +148,79 @@ def create_figure(center_circle1, radius_circle1, center_circle2, radius_circle2
                           [520 + triangle2_points[2][0], 317 + triangle2_points[2][1]],
                           fill="black")
 
+def transf(dx, dy):
+
+    clean()
+
+    params_array = read_array()
+
+    transference_array = transference(params_array, dx, dy)
+
+    # отрисовка фигуры с новыми координатами
+    create_figure(transference_array[0], transference_array[1],
+              transference_array[2], transference_array[3],
+              transference_array[4], transference_array[5],
+              transference_array[6], transference_array[7],
+              transference_array[8], transference_array[9],
+              transference_array[10], transference_array[11],
+              transference_array[12], transference_array[13],
+              transference_array[14], transference_array[15], transference_array[16])
+
+    canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='black')  # ось У
+    canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='black')  # ось X
+
+    write_array(transference_array)
+
+def scale(xm, ym, kx, ky):
+
+    clean()
+
+    params_array = read_array()
+
+    # новые каоординаты после масштабирования
+    scaling_array = scaling(params_array, xm, ym, kx, ky)
+
+    # отрисовка фигуры с новыми координатами
+    create_figure(scaling_array[0], scaling_array[1],
+                   scaling_array[2], scaling_array[3],
+                   scaling_array[4], scaling_array[5],
+                   scaling_array[6], scaling_array[7],
+                   scaling_array[8], scaling_array[9],
+                   scaling_array[10], scaling_array[11],
+                   scaling_array[12], scaling_array[13],
+                   scaling_array[14], scaling_array[15], scaling_array[16])
+
+    canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='black')  # ось У
+    canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='black')  # ось X
+
+    write_array(scaling_array)
+
+def rot(xm, ym, phi):
+
+    clean()
+
+    params_array = read_array()
+
+    rotate_array = rotate(params_array, xm, ym, phi)
+
+    # отрисовка фигуры с новыми координатами
+    create_figure(rotate_array[0], rotate_array[1],
+                  rotate_array[2], rotate_array[3],
+                  rotate_array[4], rotate_array[5],
+                  rotate_array[6], rotate_array[7],
+                  rotate_array[8], rotate_array[9],
+                  rotate_array[10],rotate_array[11],
+                  rotate_array[12], rotate_array[13],
+                  rotate_array[14], rotate_array[15], phi)
+
+    canvas.create_line(520, 20, 520, 620, width=1, arrow=FIRST, fill='black')  # ось У
+    canvas.create_line(20, 320, 1020, 320, width=1, arrow=LAST, fill='black')  # ось X
+
+    write_array(rotate_array)
+
+
+def clean():
+    canvas.delete('all')
 
 
 root = Tk()
@@ -109,77 +233,82 @@ canvas.pack(side='right')
 # смещение по x
 x = 15
 # смещение по y
-y = 130
-
-# Меню
-btn_rep = Button(root, text='Переместить', width=25)
-btn_rep.bind('<Button-1>')
-btn_rep.place(x=x, y=y)
-
-label_rep_dx = Label(root, text='dx:')
-label_rep_dx.place(x=x, y=y+40)
-entry_rep_dx = Entry(root, width=10)
-entry_rep_dx.place(x=x+25, y=y+40)
-
-label_rep_dy = Label(root, text='dy:')
-label_rep_dy.place(x=x+115, y=y+40)
-entry_rep_dy = Entry(root, width=10)
-entry_rep_dy.place(x=x+140, y=y+40)
-
-
-btn_sc = Button(root, text='Масштабировать', width=25)
-btn_sc.bind('<Button-1>')
-btn_sc.place(x=x, y=y+140)
-
-label_sc_cent = Label(root, text='cent:')
-label_sc_cent.place(x=x, y=y+180)
-entry_sc_cent = Entry(root, width=5)
-entry_sc_cent.place(x=x+35, y=y+180)
-
-label_sc_dx = Label(root, text='dx:')
-label_sc_dx.place(x=x+82, y=y+180)
-entry_sc_dx = Entry(root, width=5)
-entry_sc_dx.place(x=x+107, y=y+180)
-
-label_sc_dy = Label(root, text='dy:')
-label_sc_dy.place(x=x+155, y=y+180)
-entry_sc_dy = Entry(root, width=5)
-entry_sc_dy.place(x=x+180, y=y+180)
-
-
-btn_sc = Button(root, text='Поворот', width=25)
-btn_sc.bind('<Button-1>')
-btn_sc.place(x=x, y=y+280)
-
-label_sc_cent = Label(root, text='cent:')
-label_sc_cent.place(x=x, y=y+320)
-entry_sc_cent = Entry(root, width=5)
-entry_sc_cent.place(x=x+35, y=y+320)
-
-label_sc_dx = Label(root, text='dx:')
-label_sc_dx.place(x=x+82, y=y+320)
-entry_sc_dx = Entry(root, width=5)
-entry_sc_dx.place(x=x+107, y=y+320)
-
-label_sc_dy = Label(root, text='dy:')
-label_sc_dy.place(x=x+155, y=y+320)
-entry_sc_dy = Entry(root, width=5)
-entry_sc_dy.place(x=x+180, y=y+320)
+y = 80
 
 # начальная кофигурация расположиения фигуры (0, 0)
+
 zero_params_array = [[-145, 0, 1], [35, 35, 1], [0, 85, 1], [35, 35, 1], [145, 0, 1], [35, 35, 1],
                      [0, -85, 1], [35, 35, 1], [0, 0, 1], [20, 20, 1], [0, 0, 1],
                      [180, 120, 1], [0, 0, 1], [110, 50, 1], [[0, 0, 1], [-180, 180, 1], [-70, 180, 1]],
-                    [[0, 0, 1], [180, 180, 1], [70, 180, 1]],0]
+                    [[0, 0, 1], [180, 180, 1], [70, 180, 1]], 0]
+
+write_array(zero_params_array)
 
 # отрисовка фигуры с начальными параметрами
-#create_figure([-145, 0], [35,35], [0, 85], [35,35], [145, 0], [35,35], [0, -85], [35,35],
-#              [0, 0], [20,20], [0, 0], [180, 120], [0, 0], [110, 50], [[0,0],[-180, 180],[-70, 180]],
-#              [[0, 0], [180, 180], [70, 180]],0)
+zero_figure = create_figure([-145, 0], [35,35], [0, 85], [35,35], [145, 0], [35,35], [0, -85], [35,35],
+              [0, 0], [20,20], [0, 0], [180, 120], [0, 0], [110, 50], [[0,0],[-180, 180],[-70, 180]],
+              [[0, 0], [180, 180], [70, 180]],0)
 
+# Меню
+label_rep_dx = Label(root, text='dx:')
+label_rep_dx.place(x=x, y=y)
+entry_rep_dx = Entry(root, width=25)
+entry_rep_dx.place(x=x+25, y=y)
 
+label_rep_dy = Label(root, text='dy:')
+label_rep_dy.place(x=x, y=y+30)
+entry_rep_dy = Entry(root, width=25)
+entry_rep_dy.place(x=x+25, y=y+30)
 
+btn_rep = Button(root, text='Переместить', width=25)
+btn_rep.bind('<Button-1>', lambda event: transf(float(entry_rep_dx.get()),
+                                                     float(entry_rep_dy.get())))
+btn_rep.place(x=x, y=y+70)
 
+label_sc_cent_x = Label(root, text='xm:')
+label_sc_cent_x.place(x=x, y=y+140)
+entry_sc_cent_x = Entry(root, width=25)
+entry_sc_cent_x.place(x=x+25, y=y+140)
+
+label_sc_cent_y = Label(root, text='ym:')
+label_sc_cent_y.place(x=x, y=y+170)
+entry_sc_cent_y = Entry(root, width=25)
+entry_sc_cent_y.place(x=x+25, y=y+170)
+
+label_sc_kx = Label(root, text='kx:')
+label_sc_kx.place(x=x, y=y+200)
+entry_sc_kx = Entry(root, width=25)
+entry_sc_kx.place(x=x+25, y=y+200)
+
+label_sc_ky = Label(root, text='ky:')
+label_sc_ky.place(x=x, y=y+230)
+entry_sc_ky = Entry(root, width=25)
+entry_sc_ky.place(x=x+25, y=y+230)
+
+btn_sc = Button(root, text='Масштабировать', width=25)
+btn_sc.bind('<Button-1>', lambda event: scale(float(entry_sc_cent_x.get()), float(entry_sc_cent_y.get()),
+                                              float(entry_sc_kx.get()), float(entry_sc_ky.get())))
+btn_sc.place(x=x, y=y+270)
+
+label_rt_cent_x = Label(root, text='xm:')
+label_rt_cent_x.place(x=x, y=y+340)
+entry_rt_cent_x = Entry(root, width=25)
+entry_rt_cent_x.place(x=x+25, y=y+340)
+
+label_rt_cent_y = Label(root, text='ym:')
+label_rt_cent_y.place(x=x, y=y+370)
+entry_rt_cent_y = Entry(root, width=25)
+entry_rt_cent_y.place(x=x+25, y=y+370)
+
+label_rt_ang = Label(root, text='ang:')
+label_rt_ang.place(x=x, y=y+400)
+entry_rt_ang = Entry(root, width=24)
+entry_rt_ang.place(x=x+28, y=y+400)
+
+btn_rt = Button(root, text='Поворот', width=25)
+btn_rt.bind('<Button-1>', lambda event: rot(float(entry_rt_cent_x.get()), float(entry_rt_cent_y.get()),
+                                              float(entry_rt_ang.get())))
+btn_rt.place(x=x, y=y+440)
 
 
 
@@ -199,7 +328,8 @@ zero_params_array = [[-145, 0, 1], [35, 35, 1], [0, 85, 1], [35, 35, 1], [145, 0
 #              transference_array[8], transference_array[9],
 #              transference_array[10], transference_array[11],
 #              transference_array[12], transference_array[13],
-#              transference_array[14], transference_array[15], 0)
+#              transference_array[14], transference_array[15],
+#              transference_array[16])
 
 
 '''Демонтрация функции масштабирования
@@ -207,10 +337,8 @@ zero_params_array = [[-145, 0, 1], [35, 35, 1], [0, 85, 1], [35, 35, 1], [145, 0
     коэффциенты масштабирования(kx, ky);
     Выход: матрица обновленных параметров'''
 
-# ДОБАВИТЬ ФУНКЦИОНАЛ С ЦЕНТРОМ МАСШТАБИРОВАНИЯ (xm, ym)
-
 # новые каоординаты после масштабирования
-#scaling_array = scaling(zero_params_array, 0, 0, 2, 2)
+#scaling_array = scaling(zero_params_array, 0, 0, 1.5, 2.5)
 
 # отрисовка фигуры с новыми координатами
 #create_figure(scaling_array[0], scaling_array[1],
@@ -218,7 +346,7 @@ zero_params_array = [[-145, 0, 1], [35, 35, 1], [0, 85, 1], [35, 35, 1], [145, 0
 #              scaling_array[4], scaling_array[5],
 #              scaling_array[6], scaling_array[7],
 #              scaling_array[8], scaling_array[9],
-#              scaling_array[10],scaling_array[11],
+#              scaling_array[10], scaling_array[11],
 #              scaling_array[12], scaling_array[13],
 #              scaling_array[14], scaling_array[15], 0)
 
@@ -229,22 +357,22 @@ zero_params_array = [[-145, 0, 1], [35, 35, 1], [0, 85, 1], [35, 35, 1], [145, 0
     Выход: матрица обновленных параметров'''
 
 # новые координаты после масштабирования
-phi = 10
-center = [72.5, -85]
+#phi = 90
+#center = [145, 0]
 
-rotate_array = rotate(zero_params_array, center[0], -center[1], phi)
+#rotate_array = rotate(zero_params_array, center[0], center[1], phi)
 
 # отрисовка фигуры с новыми координатами
-create_figure(rotate_array[0], rotate_array[1],
-              rotate_array[2], rotate_array[3],
-              rotate_array[4], rotate_array[5],
-              rotate_array[6], rotate_array[7],
-              rotate_array[8], rotate_array[9],
-              rotate_array[10],rotate_array[11],
-              rotate_array[12], rotate_array[13],
-              rotate_array[14], rotate_array[15], phi)
+#create_figure(rotate_array[0], rotate_array[1],
+#              rotate_array[2], rotate_array[3],
+#              rotate_array[4], rotate_array[5],
+#              rotate_array[6], rotate_array[7],
+#              rotate_array[8], rotate_array[9],
+#              rotate_array[10],rotate_array[11],
+#              rotate_array[12], rotate_array[13],
+#              rotate_array[14], rotate_array[15], phi)
 
-draw_ellipse(center, 5, 5, 0, "blue")
+#draw_ellipse(center, 5, 5, 0, "blue")
 
 canvas.create_line(520,20,520,620,width=1,arrow=FIRST,fill='black') #ось У
 canvas.create_line(20, 320, 1020, 320,width=1,arrow=LAST, fill='black') #ось X
